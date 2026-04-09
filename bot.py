@@ -1089,56 +1089,21 @@ async def cb_profile(call: CallbackQuery):
     await call.message.answer(text.strip(), parse_mode="HTML", reply_markup=kb_back(uid))
     await call.answer()
 
-# ─── Render Webhook ─────────────────────────────────────────────────────────
+# ─── Main ─────────────────────────────────────────────────────────────────────
 
-import os
-import uvicorn
-from starlette.applications import Starlette
-from starlette.routing import Route
-from starlette.requests import Request
-from starlette.responses import PlainTextResponse, Response
-from aiogram.types import Update
-
-
-async def webhook_main():
-    """Запуск бота через вебхук для Render"""
-    bot_instance = Bot(token=BOT_TOKEN)
-    dp = Dispatcher()
+async def main():
+    # Инициализируем базу данных
+    init_db()
+    
+    # Создаём бота и диспетчер
+    bot = Bot(token=BOT_TOKEN)
+    dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
-
-    # Получаем URL от Render
-    WEBHOOK_URL = os.environ.get("RENDER_EXTERNAL_URL")
-    PORT = int(os.getenv("PORT", 8000))
-
-    if WEBHOOK_URL:
-        # Устанавливаем вебхук
-        await bot_instance.set_webhook(f"{WEBHOOK_URL}/webhook")
-        print(f"✅ Webhook установлен: {WEBHOOK_URL}/webhook")
-    else:
-        print("⚠️ RENDER_EXTERNAL_URL не найден, запускаем polling (только для локальной разработки)")
-        await dp.start_polling(bot_instance)
-        return
-
-    # Создаём веб-сервер для приёма вебхуков
-    async def telegram_webhook(request: Request) -> Response:
-        update = Update.model_validate(await request.json(), context={"bot": bot_instance})
-        await dp.feed_update(bot_instance, update)
-        return Response()
-
-    async def healthcheck(_: Request) -> PlainTextResponse:
-        return PlainTextResponse("OK")
-
-    starlette_app = Starlette(routes=[
-        Route("/webhook", telegram_webhook, methods=["POST"]),
-        Route("/healthcheck", healthcheck, methods=["GET"]),
-        Route("/", healthcheck, methods=["GET"]),
-    ])
-
-    # Запускаем сервер
-    config = uvicorn.Config(starlette_app, host="0.0.0.0", port=PORT, log_level="info")
-    server = uvicorn.Server(config)
-    await server.serve()
-
+    
+    print("🚀 Бот запущен и работает!")
+    
+    # Запускаем polling (для Railway это нормально)
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    asyncio.run(webhook_main())
+    asyncio.run(main())
