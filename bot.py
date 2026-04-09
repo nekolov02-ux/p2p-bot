@@ -19,8 +19,8 @@ from aiogram.types import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-BOT_TOKEN = "7854878948:AAFty1yjJYc7GEPbA_kt9jcG8EBG7v1KjPw"
-MANAGER = "@nekolov"
+BOT_TOKEN = "8653421376:AAF6twAHY1qYEz2unE9nCT_AcTeFVmLWYms"
+MANAGER = "@Binance_sefety"
 IMAGES_DIR = Path("images")
 
 # ─── Database ────────────────────────────────────────────────────────────────
