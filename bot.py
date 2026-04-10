@@ -946,7 +946,7 @@ async def cmd_confirm_payment(message: Message, bot: Bot):
         f"✅ Оплата подтверждена для сделки #{deal_id}.\n\n"
         f"💰 Сумма: {amount_str}\n"
         f"📝 Описание: <blockquote>{deal['description']}</blockquote>\n\n"
-        f"❗️ Пожалуйста, передайте {dtype_s}:\n"
+        f"❗️ ⚠️ пожалуйста отправьте подарок {dtype_s}:\n"
         f"Только менеджеру бота для обработки: {MANAGER}\n\n"
         f"После отправки менеджеру подтвердите действие кнопкой ниже:"
         if seller_lang == "ru" else
